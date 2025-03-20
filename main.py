@@ -26,8 +26,6 @@ def get_current_song():
 
 
 def get_recently_played():
-    #need to filter out podcasts?
-
     recently_played = sp.current_user_recently_played(limit=10)
     songs = []
     for song in recently_played['items']:
@@ -42,8 +40,6 @@ def get_recently_played():
 
 
 def get_last_played():
-    #need to filter out podcasts?
-
     last_played = sp.current_user_recently_played(limit=1)
     song = last_played['items'][0]['track']['name']
     album = last_played['items'][0]['track']['album']['name']
