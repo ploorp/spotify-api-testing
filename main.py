@@ -13,7 +13,7 @@ redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=client_id, 
     client_secret=client_secret, 
-    scope="user-read-currently-playing, user-read-recently-played",
+    scope="user-read-currently-playing user-read-recently-played"
 ))
 
 
