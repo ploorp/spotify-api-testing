@@ -17,18 +17,17 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 ))
 
 
-def get_current_song(song):
-    #current_song = sp.current_user_playing_track()
-    current_song = song
-    if current_song['currently_playing_type'] == 'track':
-        song = current_song['item']['name']
-        album = current_song['item']['album']['name']
-        artist = current_song['item']['artists'][0]['name']
-        return f"currently playing {song} by {artist}"
-    return "no song found"
+def get_current_song():
+    current_song = sp.current_user_playing_track()
+    song = current_song['item']['name']
+    album = current_song['item']['album']['name']
+    artist = current_song['item']['artists'][0]['name']
+    return f"{song} by {artist}"
 
 
 def get_recently_played():
+    #need to filter out podcasts?
+
     recently_played = sp.current_user_recently_played(limit=10)
     songs = []
     for song in recently_played['items']:
@@ -43,6 +42,8 @@ def get_recently_played():
 
 
 def get_last_played():
+    #need to filter out podcasts?
+
     last_played = sp.current_user_recently_played(limit=1)
     song = last_played['items'][0]['track']['name']
     album = last_played['items'][0]['track']['album']['name']
@@ -67,11 +68,25 @@ def convert_timestamp_to_time_ago(timestamp):
     return f"{int(hours)}h {int(minutes)}m ago" if hours > 0 else f"{int(minutes)}m ago"
 
 
+def convert_milli_to_time_ago(timestamp):
+    played_time = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+    now = datetime.now(timezone.utc)
+    time_diff = now - played_time
+
+    hours, remainder = divmod(time_diff.total_seconds(), 3600)
+    minutes = remainder // 60
+
+    return f"{int(hours)}h {int(minutes)}m ago" if hours > 0 else f"{int(minutes)}m ago"
+
+
 def main():
-    current_song = sp.current_user_playing_track()
-    if current_song and current_song['is_playing']:
-        print(get_current_song(current_song))
+    playback = sp.current_playback()
+
+    if playback and playback['currently_playing_type'] == 'track':
+        if playback['is_playing']:
+            print('currently playing ' + get_current_song())
+        else:
+            print(f'last played {get_current_song()} {convert_milli_to_time_ago(playback['timestamp'])} (paused)')
     else:
         print(get_last_played())
-
 main()
