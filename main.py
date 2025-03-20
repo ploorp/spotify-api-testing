@@ -26,11 +26,11 @@ def get_current_song():
     artist_uri = current_song['item']['artists'][0]['uri']
     artist_img = current_song['item']['artists'][0]['images'][0]['url']
     album_img = current_song['item']['album']['images'][0]['url']
-    return f"{song} by {artist}"
+    return [song, album, artist, track_uri, artist_uri, artist_img, album_img]
 
 
-def get_recently_played():
-    recently_played = sp.current_user_recently_played(limit=10)
+def get_recently_played(count):
+    recently_played = sp.current_user_recently_played(limit=count)
     songs = []
     for song in recently_played['items']:
         track = song['track']['name']
@@ -43,22 +43,6 @@ def get_recently_played():
         timestamp = song['played_at']
         songs.append([timestamp, track, album, artist, track_uri, artist_uri, artist_img, album_img])
     return songs
-
-
-def get_last_played():
-    last_played = sp.current_user_recently_played(limit=1)
-    song = last_played['items'][0]['track']['name']
-    album = last_played['items'][0]['track']['album']['name']
-    artist = last_played['items'][0]['track']['artists'][0]['name']
-    track_uri = last_played['items'][0]['track']['uri']
-    artist_uri = last_played['items'][0]['track']['artists'][0]['uri']
-    artist_img = last_played['items'][0]['track']['artists'][0]['images'][0]['url']
-    album_img = last_played['items'][0]['track']['album']['images'][0]['url']
-    timestamp = last_played['items'][0]['played_at']
-
-    time_ago = convert_timestamp_to_time_ago(timestamp)
-
-    return f"{song} by {artist} {time_ago}"
 
 
 def convert_timestamp_to_time_ago(timestamp):
@@ -92,11 +76,15 @@ def main():
     playback = sp.current_playback()
 
     if playback and playback['currently_playing_type'] == 'track':
+        current_song = get_current_song()
         if playback['is_playing']:
-            print('currently playing ' + get_current_song())
+            print(f'currently playing {current_song[0]} by {current_song[2]}')
         else:
-            print(f'last played {get_current_song()} {convert_milli_to_time_ago(playback['timestamp'])} (paused)')
+            time_ago = convert_milli_to_time_ago(playback['timestamp'])
+            print(f'last played {current_song[0]} by {current_song[2]} {time_ago} (paused)')
     else:
-        print(f'last played {get_last_played()}')
+        last_song = get_recently_played(1)
+        time_ago = convert_milli_to_time_ago(last_song[0][0])
+        print(f'last played {last_song[0][1]} by {last_song[0][3]} {time_ago}')
 
 main()
