@@ -24,9 +24,9 @@ def get_current_song():
     artist = current_song['item']['artists'][0]['name']
     track_uri = current_song['item']['uri']
     artist_uri = current_song['item']['artists'][0]['uri']
-    artist_img = current_song['item']['artists'][0]['images'][0]['url']
+    artist_id = current_song['item']['artists'][0]['id']
     album_img = current_song['item']['album']['images'][0]['url']
-    return [song, album, artist, track_uri, artist_uri, artist_img, album_img]
+    return [song, album, artist, track_uri, artist_uri, artist_id, album_img]
 
 
 def get_recently_played(count):
@@ -38,10 +38,10 @@ def get_recently_played(count):
         artist = song['track']['artists'][0]['name']
         track_uri = song['track']['uri']
         artist_uri = song['track']['artists'][0]['uri']
-        artist_img = song['track']['artists'][0]['images'][0]['url']
+        artist_imd = song['track']['artists'][0]['id']
         album_img = song['track']['album']['images'][0]['url']
         timestamp = song['played_at']
-        songs.append([timestamp, track, album, artist, track_uri, artist_uri, artist_img, album_img])
+        songs.append([timestamp, track, album, artist, track_uri, artist_uri, artist_id, album_img])
     return songs
 
 
@@ -86,5 +86,5 @@ def main():
         last_song = get_recently_played(1)
         time_ago = convert_milli_to_time_ago(last_song[0][0])
         print(f'last played {last_song[0][1]} by {last_song[0][3]} {time_ago}')
-
+        
 main()
