@@ -13,13 +13,14 @@ redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=client_id, 
     client_secret=client_secret, 
-    scope="user-read-currently-playing user-read-recently-played"
+    scope="user-read-currently-playing user-read-recently-played user-read-playback-state"
 ))
 
 
-def get_current_song():
-    current_song = sp.current_user_playing_track()
-    if current_song and current_song['is_playing'] and current_song['currently_playing_type'] == 'track':
+def get_current_song(song):
+    #current_song = sp.current_user_playing_track()
+    current_song = song
+    if current_song['currently_playing_type'] == 'track':
         song = current_song['item']['name']
         album = current_song['item']['album']['name']
         artist = current_song['item']['artists'][0]['name']
@@ -67,8 +68,9 @@ def convert_timestamp_to_time_ago(timestamp):
 
 
 def main():
-    if sp.current_playback()['is_playing']:
-        print(get_current_song())
+    current_song = sp.current_user_playing_track()
+    if current_song and current_song['is_playing']:
+        print(get_current_song(current_song))
     else:
         print(get_last_played())
 
