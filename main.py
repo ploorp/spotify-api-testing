@@ -84,7 +84,7 @@ def main():
             print(f'last played {current_song[0]} by {current_song[2]} {time_ago} (paused)')
     else:
         last_song = get_recently_played(1)
-        time_ago = convert_milli_to_time_ago(last_song[0][0])
+        time_ago = convert_timestamp_to_time_ago(last_song[0][0])
         print(f'last played {last_song[0][1]} by {last_song[0][3]} {time_ago}')
 
 main()
